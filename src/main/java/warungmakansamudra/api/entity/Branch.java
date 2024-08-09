@@ -1,4 +1,4 @@
-package entity;
+package warungmakansamudra.api.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,6 @@ import java.util.List;
 public class Branch {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "branch_id")
     private String branchId;
 

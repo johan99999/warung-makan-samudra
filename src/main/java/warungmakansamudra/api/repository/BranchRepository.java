@@ -1,6 +1,6 @@
-package repository;
+package warungmakansamudra.api.repository;
 
-import entity.Branch;
+import warungmakansamudra.api.entity.Branch;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

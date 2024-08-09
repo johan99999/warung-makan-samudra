@@ -1,4 +1,4 @@
-package model;
+package warungmakansamudra.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CreateBranchRequest {
 
-    @JsonIgnore
+
     @NotBlank
     @Size(max = 100)
     private String branchId;

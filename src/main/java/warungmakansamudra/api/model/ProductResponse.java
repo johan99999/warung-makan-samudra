@@ -1,4 +1,4 @@
-package model;
+package warungmakansamudra.api.model;
 
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package entity;
+package warungmakansamudra.api.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,7 +30,7 @@ public class Product {
 
     private Long price;
 
-    @Column(name = "branch_id")
+    @Column(name = "branch_id",insertable = false, updatable = false)
     private String branchId;
 
     @ManyToOne

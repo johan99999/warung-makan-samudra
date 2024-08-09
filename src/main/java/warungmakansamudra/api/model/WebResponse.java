@@ -1,4 +1,4 @@
-package model;
+package warungmakansamudra.api.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,12 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PagingResponse {
+public class WebResponse <T>{
 
-    private Integer currentPage;
+    private T data;
 
-    private Integer totalPage;
+    private String errors;
 
-    private Integer size;
-
+    private PagingResponse paging;
 }

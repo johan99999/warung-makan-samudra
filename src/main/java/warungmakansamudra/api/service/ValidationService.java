@@ -1,4 +1,4 @@
-package service;
+package warungmakansamudra.api.service;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -16,7 +16,7 @@ public class ValidationService {
 
     public void validate(Object request) {
         Set<ConstraintViolation<Object>> constraintViolations = validator.validate(request);
-        if (constraintViolations.size() != 0) {
+        if (!constraintViolations.isEmpty()) {
             //error
             throw new ConstraintViolationException(constraintViolations);
         }

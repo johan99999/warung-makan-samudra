@@ -1,4 +1,4 @@
-package model;
+package warungmakansamudra.api.model;
 
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class BranchResponse {
 
-    @Id
+
     private String branchId;
 
     private String branchCode;
