@@ -45,6 +45,14 @@ public class BranchController {
         BranchResponse branchResponse = branchService.update(updateBranchRequest);
         return WebResponse.<BranchResponse>builder().data(branchResponse).build();
     }
+
+    @DeleteMapping(
+            path = "/api/branch/{branch_id}"
+    )
+    public WebResponse<String> delete(Branch branch, @PathVariable("branch_id") String branchId){
+        branchService.delete(branch, branchId);
+        return WebResponse.<String>builder().data("OK").build();
+    }
     }
 
 

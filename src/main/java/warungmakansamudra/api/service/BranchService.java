@@ -63,6 +63,15 @@ public class BranchService {
                 .build();
     }
 
+
+    @Transactional
+    public void delete(Branch branch, String branchId) {
+        branch = branchRepository.findById(branchId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Branch not found"));
+
+        branchRepository.delete(branch);
+    }
+
     private BranchResponse toBranchResponse(Branch branch) {
         return BranchResponse.builder()
                 .branchId(branch.getBranchId())
@@ -72,6 +81,7 @@ public class BranchService {
                 .phoneNumber(branch.getPhoneNumber())
                 .build();
     }
+
 
     private BranchResponse toBranchResponseUpdate(Branch branch) {
         return BranchResponse.builder()

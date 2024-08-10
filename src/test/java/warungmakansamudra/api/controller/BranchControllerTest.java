@@ -103,4 +103,30 @@ class BranchControllerTest {
             assertEquals(branch.getBranchId(), branchUpdate.getBranchId());
         });
     }
+
+    @Test
+    void deleteBranch() throws Exception {
+        Branch branch = new Branch();
+        branch.setBranchId("test3");
+        branch.setBranchCode("test");
+        branch.setBranchName("test");
+        branch.setAddress("Test");
+        branch.setPhoneNumber("999");
+        branchRepository.save(branch);
+
+        mockMvc.perform(
+                delete("/api/branch/" + branch.getBranchId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpectAll(
+                status().isOk()
+        ).andDo(result -> {
+            WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+
+            });
+            assertNull(response.getErrors());
+
+            assertEquals("OK", response.getData());
+        });
+    }
 }
