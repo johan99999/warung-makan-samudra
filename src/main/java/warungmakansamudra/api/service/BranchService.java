@@ -8,9 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import warungmakansamudra.api.model.UpdateBranchRequest;
 import warungmakansamudra.api.repository.BranchRepository;
-
-import java.util.UUID;
 
 @Service
 public class BranchService {
@@ -41,9 +40,41 @@ public class BranchService {
         return toBranchResponse(createBranch);
     }
 
+    @Transactional
+    public BranchResponse update(UpdateBranchRequest request) {
+        validationService.validate(request);
+
+        Branch branchToUpdate = branchRepository.findById(request.getBranchId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Branch not found"));
+
+        branchToUpdate.setBranchId(request.getBranchId());
+        branchToUpdate.setBranchCode(request.getBranchCode());
+        branchToUpdate.setBranchName(request.getBranchName());
+        branchToUpdate.setAddress(request.getAddress());
+        branchToUpdate.setPhoneNumber(request.getPhoneNumber());
+        branchRepository.save(branchToUpdate);
+
+        return BranchResponse.builder()
+                .branchId(branchToUpdate.getBranchId())
+                .branchCode(branchToUpdate.getBranchCode())
+                .branchName(branchToUpdate.getBranchName())
+                .address(branchToUpdate.getAddress())
+                .phoneNumber(branchToUpdate.getPhoneNumber())
+                .build();
+    }
+
     private BranchResponse toBranchResponse(Branch branch) {
         return BranchResponse.builder()
                 .branchId(branch.getBranchId())
+                .branchCode(branch.getBranchCode())
+                .branchName(branch.getBranchName())
+                .address(branch.getAddress())
+                .phoneNumber(branch.getPhoneNumber())
+                .build();
+    }
+
+    private BranchResponse toBranchResponseUpdate(Branch branch) {
+        return BranchResponse.builder()
                 .branchCode(branch.getBranchCode())
                 .branchName(branch.getBranchName())
                 .address(branch.getAddress())
