@@ -72,6 +72,15 @@ public class BranchService {
         branchRepository.delete(branch);
     }
 
+
+    @Transactional(readOnly = true)
+    public BranchResponse get(Branch branch, String branchId) {
+        branch = branchRepository.findById(branchId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Branch not found"));
+
+        return toBranchResponse(branch);
+    }
+
     private BranchResponse toBranchResponse(Branch branch) {
         return BranchResponse.builder()
                 .branchId(branch.getBranchId())

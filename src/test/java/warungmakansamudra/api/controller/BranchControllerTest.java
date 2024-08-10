@@ -129,4 +129,34 @@ class BranchControllerTest {
             assertEquals("OK", response.getData());
         });
     }
+
+    @Test
+    void getBranch() throws Exception {
+        Branch branch = new Branch();
+        branch.setBranchId("test4");
+        branch.setBranchCode("test");
+        branch.setBranchName("test");
+        branch.setAddress("Test");
+        branch.setPhoneNumber("999");
+        branchRepository.save(branch);
+
+        mockMvc.perform(
+                get("/api/branch/" + branch.getBranchId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpectAll(
+                status().isOk()
+        ).andDo(result -> {
+            WebResponse<BranchResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+            assertNull(response.getErrors());
+
+            assertEquals("test4", response.getData().getBranchId());
+            assertEquals("test", response.getData().getBranchCode());
+            assertEquals("test", response.getData().getBranchName());
+            assertEquals("Test", response.getData().getAddress());
+            assertEquals("999", response.getData().getPhoneNumber());
+
+        });
+    }
 }

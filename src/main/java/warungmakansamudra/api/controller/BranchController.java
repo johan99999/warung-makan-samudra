@@ -53,6 +53,15 @@ public class BranchController {
         branchService.delete(branch, branchId);
         return WebResponse.<String>builder().data("OK").build();
     }
+
+    @GetMapping(
+            path = "/api/branch/{branch_id}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<BranchResponse> get(Branch branch, @PathVariable("branch_id") String branchId){
+        BranchResponse branchResponse = branchService.get(branch, branchId);
+        return WebResponse.<BranchResponse>builder().data(branchResponse).build();
+    }
     }
 
 
