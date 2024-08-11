@@ -23,3 +23,4 @@ create table products
     branch_id varchar(100) not null,
     foreign key fk_branch_id(branch_id) references branch(branch_id)
 ) ENGINE InnoDB;
+drop table products;

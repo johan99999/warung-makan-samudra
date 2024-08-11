@@ -30,8 +30,6 @@ public class Product {
 
     private Long price;
 
-    @Column(name = "branch_id",insertable = false, updatable = false)
-    private String branchId;
 
     @ManyToOne
     @JoinColumn(name = "branch_id", referencedColumnName = "branch_id")
