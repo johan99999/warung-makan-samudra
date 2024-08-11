@@ -11,6 +11,7 @@ import warungmakansamudra.api.entity.Product;
 import warungmakansamudra.api.model.BranchResponse;
 import warungmakansamudra.api.model.CreateProductRequest;
 import warungmakansamudra.api.model.ProductResponse;
+import warungmakansamudra.api.model.UpdateProductRequest;
 import warungmakansamudra.api.repository.BranchRepository;
 import warungmakansamudra.api.repository.ProductRepository;
 
@@ -57,6 +58,30 @@ public class ProductService {
         product.setBranch(branch);
         productRepository.save(product);
         return toProductResponse(product, branch);
+    }
+
+    @Transactional
+    public ProductResponse update(UpdateProductRequest request) {
+        validationService.validate(request);
+
+        log.info("Finding product with ID: {}", request.getProductId());
+        Product productToUpdate = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+        log.info("Product found: {}", productToUpdate);
+
+        Branch branch = branchRepository.findById(request.getBranchId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Branch not found"));
+        log.info("Branch found: {}", branch);
+
+        productToUpdate.setProductId(request.getProductId());
+        productToUpdate.setProductPriceId(request.getProductPriceId());
+        productToUpdate.setProductCode(request.getProductCode());
+        productToUpdate.setProductName(request.getProductName());
+        productToUpdate.setPrice(request.getPrice());
+        productToUpdate.setBranch(branch);
+        productRepository.save(productToUpdate);
+
+        return toProductResponse(productToUpdate, branch);
     }
 
     private ProductResponse toProductResponse(Product product, Branch branch) {

@@ -2,6 +2,7 @@ package warungmakansamudra.api.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import warungmakansamudra.api.entity.Branch;
 import warungmakansamudra.api.entity.Product;
 import warungmakansamudra.api.model.CreateProductRequest;
 import warungmakansamudra.api.model.ProductResponse;
+import warungmakansamudra.api.model.UpdateProductRequest;
 import warungmakansamudra.api.model.WebResponse;
 import warungmakansamudra.api.repository.BranchRepository;
 import warungmakansamudra.api.repository.ProductRepository;
@@ -25,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Slf4j
 class ProductControllerTest {
 
     @Autowired
@@ -63,10 +66,7 @@ class ProductControllerTest {
         product.setProductCode("test");
         product.setProductName("test");
         product.setPrice(5000L);
-
-
-
-
+        
         mockMvc.perform(
                 post("/api/products/")
                         .accept(MediaType.APPLICATION_JSON)
@@ -85,4 +85,65 @@ class ProductControllerTest {
             assertEquals("test", response.getData().getProductId());
         });
     }
+
+    @Test
+    void updateProduct() throws Exception {
+
+        Branch branch = new Branch();
+        branch.setBranchId("test");
+        branch.setBranchCode("test");
+        branch.setBranchName("test");
+        branch.setAddress("test");
+        branch.setPhoneNumber("999");
+        branchRepository.save(branch);
+
+        Branch branch2 = new Branch();
+        branch2.setBranchId("test2");
+        branch2.setBranchCode("test2");
+        branch2.setBranchName("test2");
+        branch2.setAddress("test2");
+        branch2.setPhoneNumber("999");
+        branchRepository.save(branch2);
+
+        Product product = new Product();
+        product.setBranch(branch);
+        product.setProductId("test");
+        product.setProductPriceId("test");
+        product.setProductCode("test");
+        product.setProductName("test");
+        product.setPrice(5000L);
+        productRepository.save(product);
+        log.info("Product saved: {}", productRepository.findById("test"));
+
+
+
+        UpdateProductRequest updateProduct = new UpdateProductRequest();
+        updateProduct.setBranchId(branch2.getBranchId());
+//        updateProduct.setProductId("test2");
+//        updateProduct.setBranch(branch2);
+        updateProduct.setProductPriceId("test2");
+        updateProduct.setProductCode("test2");
+        updateProduct.setProductName("test2");
+        updateProduct.setPrice(15000L);
+
+
+        mockMvc.perform(
+                put("/api/products/" + product.getProductId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(branch))
+                        .content(objectMapper.writeValueAsString(updateProduct))
+        ).andExpectAll(
+                status().isOk()
+        ).andDo(result -> {
+            WebResponse<ProductResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+            assertNull(response.getErrors());
+            assertNotNull(branchRepository.findByBranchId(branch.getBranchId()));
+            assertNotNull(productRepository.findById(product.getProductId()));
+            assertEquals("test2", response.getData().getBranchId());
+            assertEquals("test", response.getData().getProductId());
+        });
+    }
+
 }
