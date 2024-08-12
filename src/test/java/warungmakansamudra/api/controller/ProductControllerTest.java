@@ -19,6 +19,8 @@ import warungmakansamudra.api.model.WebResponse;
 import warungmakansamudra.api.repository.BranchRepository;
 import warungmakansamudra.api.repository.ProductRepository;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.MockMvcBuilder.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -181,4 +183,41 @@ class ProductControllerTest {
         });
     }
 
+    @Test
+    void listProduct() throws Exception {
+
+
+        for (int i = 0; i < 5; i++) {
+            Branch branch = new Branch();
+            branch.setBranchId("test - " + i);
+            branch.setBranchCode("test - " + i);
+            branch.setBranchName("test - " + i);
+            branch.setAddress("test - " + i);
+            branch.setPhoneNumber("999" + i);
+            branchRepository.save(branch);
+
+            Product productList = new Product();
+            productList.setBranch(branch);
+            productList.setProductId("test - " + i);
+            productList.setProductPriceId("test - " + i);
+            productList.setProductCode("test - " + i);
+            productList.setProductName("test - " + i);
+            productList.setPrice(5000L);
+            productRepository.save(productList);
+        }
+//        List<Product> product = productRepository.findAll();
+
+        mockMvc.perform(
+                get("/api/products/")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+        ).andExpectAll(
+                status().isOk()
+        ).andDo(result -> {
+            WebResponse<List<ProductResponse>> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+            assertNull(response.getErrors());
+            assertEquals(5, response.getData().size());
+        });
+    }
 }

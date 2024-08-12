@@ -9,6 +9,8 @@ import warungmakansamudra.api.model.*;
 import warungmakansamudra.api.repository.ProductRepository;
 import warungmakansamudra.api.service.ProductService;
 
+import java.util.List;
+
 @RestController
 public class ProductController {
 
@@ -41,4 +43,14 @@ public class ProductController {
         productService.delete(product, productId);
         return WebResponse.<String>builder().data("OK").build();
     }
+
+    @GetMapping(
+            path = "/api/products/",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<List<ProductResponse>> list() {
+        List<ProductResponse> productResponses = productService.list();
+        return WebResponse.<List<ProductResponse>>builder().data(productResponses).build();
+    }
+
 }

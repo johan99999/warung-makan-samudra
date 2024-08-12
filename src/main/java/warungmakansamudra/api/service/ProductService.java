@@ -14,7 +14,9 @@ import warungmakansamudra.api.model.UpdateProductRequest;
 import warungmakansamudra.api.repository.BranchRepository;
 import warungmakansamudra.api.repository.ProductRepository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -91,8 +93,34 @@ public class ProductService {
         productRepository.delete(product);
     }
 
+    @Transactional
+    public List<ProductResponse> list(){
+        List<Product> productList = productRepository.findAll();
+//                orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+
+//        Optional<Product> products = productRepository.findById(productList.getProductId());
+        return productList.stream()
+                .map(this::toProductResponseList)
+                .collect(Collectors.toList());
+    }
+
 
     private ProductResponse toProductResponse(Product product, Branch branch) {
+        return ProductResponse.builder()
+                .productId(product.getProductId())
+                .productPriceId(product.getProductPriceId())
+                .productCode(product.getProductCode())
+                .productName(product.getProductName())
+                .price(product.getPrice())
+                .branchId(branch.getBranchId())
+                .branchCode(branch.getBranchCode())
+                .branchName(branch.getBranchName())
+                .address(branch.getAddress())
+                .phoneNumber(branch.getPhoneNumber())
+                .build();
+    }
+    private ProductResponse toProductResponseList(Product product) {
+        Branch branch = product.getBranch();
         return ProductResponse.builder()
                 .productId(product.getProductId())
                 .productPriceId(product.getProductPriceId())
