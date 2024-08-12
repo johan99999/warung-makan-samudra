@@ -35,4 +35,10 @@ public class ProductController {
         ProductResponse productResponse = productService.update(updateProductRequest);
         return WebResponse.<ProductResponse>builder().data(productResponse).build();
     }
+
+    @DeleteMapping(path = "/api/products/{product_id}")
+    public WebResponse<String> delete (Product product, @PathVariable("product_id") String productId) {
+        productService.delete(product, productId);
+        return WebResponse.<String>builder().data("OK").build();
+    }
 }

@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import warungmakansamudra.api.entity.Branch;
 import warungmakansamudra.api.entity.Product;
-import warungmakansamudra.api.model.BranchResponse;
 import warungmakansamudra.api.model.CreateProductRequest;
 import warungmakansamudra.api.model.ProductResponse;
 import warungmakansamudra.api.model.UpdateProductRequest;
@@ -83,6 +82,15 @@ public class ProductService {
 
         return toProductResponse(productToUpdate, branch);
     }
+
+    @Transactional
+    public void delete(Product product, String productId){
+        product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+
+        productRepository.delete(product);
+    }
+
 
     private ProductResponse toProductResponse(Product product, Branch branch) {
         return ProductResponse.builder()

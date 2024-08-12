@@ -146,4 +146,39 @@ class ProductControllerTest {
         });
     }
 
+    @Test
+    void deleteProduct() throws Exception {
+
+        Branch branch = new Branch();
+        branch.setBranchId("test");
+        branch.setBranchCode("test");
+        branch.setBranchName("test");
+        branch.setAddress("test");
+        branch.setPhoneNumber("999");
+        branchRepository.save(branch);
+
+        Product product = new Product();
+        product.setBranch(branch);
+        product.setProductId("test");
+        product.setProductPriceId("test");
+        product.setProductCode("test");
+        product.setProductName("test");
+        product.setPrice(5000L);
+        productRepository.save(product);
+
+        mockMvc.perform(
+                delete("/api/products/" + product.getProductId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpectAll(
+                status().isOk()
+        ).andDo(result -> {
+            WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+            assertNull(response.getErrors());
+
+            assertEquals("OK", response.getData());
+        });
+    }
+
 }
