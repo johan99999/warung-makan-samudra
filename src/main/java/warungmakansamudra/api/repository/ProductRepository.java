@@ -12,4 +12,5 @@ public interface ProductRepository extends JpaRepository<Product, String> , JpaS
 //    Optional<Product> findFirstByProductAndId(Product product, String productId);
 //
 //    List<Product> findAllByProduct(Product product);
+List<Product> findByBranchBranchId(String branchId);
 }

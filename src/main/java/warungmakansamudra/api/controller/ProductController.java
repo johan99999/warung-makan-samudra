@@ -53,4 +53,13 @@ public class ProductController {
         return WebResponse.<List<ProductResponse>>builder().data(productResponses).build();
     }
 
+    @GetMapping(
+            path = "/api/products/{branch_id}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<List<ProductResponse>> listByBranchId(@PathVariable("branch_id") String branchId) {
+        List<ProductResponse> productResponses = productService.listByBranchId(branchId);
+        return WebResponse.<List<ProductResponse>>builder().data(productResponses).build();
+    }
+
 }

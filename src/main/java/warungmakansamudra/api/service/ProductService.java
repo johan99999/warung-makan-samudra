@@ -104,6 +104,17 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public List<ProductResponse> listByBranchId(String branchId){
+        List<Product> productList = productRepository.findByBranchBranchId(branchId);
+//                orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+
+//        Optional<Product> products = productRepository.findById(productList.getProductId());
+        return productList.stream()
+                .map(this::toProductResponseList)
+                .collect(Collectors.toList());
+    }
+
 
     private ProductResponse toProductResponse(Product product, Branch branch) {
         return ProductResponse.builder()

@@ -220,4 +220,43 @@ class ProductControllerTest {
             assertEquals(5, response.getData().size());
         });
     }
+
+    @Test
+    void listProductByBranchId() throws Exception {
+
+
+        Branch branch = new Branch();
+        branch.setBranchId("test");
+        branch.setBranchCode("test");
+        branch.setBranchName("test");
+        branch.setAddress("test");
+        branch.setPhoneNumber("999");
+        branchRepository.save(branch);
+
+        for (int i = 0; i < 5; i++) {
+            Product productList = new Product();
+            productList.setBranch(branch);
+            productList.setProductId("test - " + i);
+            productList.setProductPriceId("test - " + i);
+            productList.setProductCode("test - " + i);
+            productList.setProductName("test - " + i);
+            productList.setPrice(5000L);
+            productRepository.save(productList);
+        }
+//        List<Product> product = productRepository.findAll();
+
+
+        mockMvc.perform(
+                get("/api/products/" + branch.getBranchId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpectAll(
+                status().isOk()
+        ).andDo(result -> {
+            WebResponse<List<ProductResponse>> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+            assertNull(response.getErrors());
+            assertEquals(5, response.getData().size());
+        });
+    }
 }
