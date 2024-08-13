@@ -1,6 +1,6 @@
 package warungmakansamudra.api.service;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -13,6 +13,8 @@ import warungmakansamudra.api.model.TransactionResponse;
 import warungmakansamudra.api.repository.BranchRepository;
 import warungmakansamudra.api.repository.ProductRepository;
 import warungmakansamudra.api.repository.TransactionRepository;
+
+import java.util.Optional;
 
 
 @Service
@@ -49,6 +51,12 @@ public class TransactionService {
         transactionRepository.save(transaction);
 
         return toTransactionResponse(transaction, product, branch);
+    }
+
+    @Transactional(readOnly = true)
+    public TransactionResponse get(Transaction transaction, Long billId){
+        transaction = transactionRepository.findById(billId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bill not found"));
+        return toTransactionResponse(transaction, transaction.getProduct(), transaction.getBranch());
     }
 
     private TransactionResponse toTransactionResponse(Transaction transaction, Product product, Branch branch) {

@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import warungmakansamudra.api.entity.Branch;
 import warungmakansamudra.api.entity.Product;
+import warungmakansamudra.api.entity.Transaction;
 import warungmakansamudra.api.model.CreateTransactionRequest;
 import warungmakansamudra.api.model.TransactionResponse;
 import warungmakansamudra.api.model.WebResponse;
@@ -23,6 +24,7 @@ import static org.springframework.test.web.servlet.MockMvcBuilder.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static warungmakansamudra.api.entity.Transaction.TransactionType.EAT_IN;
 import static warungmakansamudra.api.entity.Transaction.TransactionType.ONLINE;
 
 @SpringBootTest
@@ -83,6 +85,54 @@ class TransactionControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
+        ).andExpectAll(
+                status().isOk()
+        ).andDo(result -> {
+                WebResponse<TransactionResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>(){
+        });
+                assertNotNull(response);
+                assertNull(response.getErrors());
+            assertNotNull(branchRepository.findByBranchId(branch.getBranchId()));
+            assertNotNull(productRepository.findById(product.getProductId()));
+            assertEquals("test", response.getData().getBranchId());
+            assertEquals("test", response.getData().getProductId());
+    });
+}
+
+@Test
+    void getTransactions() throws Exception{
+        Branch branch = new Branch();
+        branch.setBranchId("test");
+        branch.setBranchCode("test");
+        branch.setBranchName("test");
+        branch.setAddress("test");
+        branch.setPhoneNumber("test");
+        branchRepository.save(branch);
+
+        Product product = new Product();
+        product.setBranch(branch);
+        product.setProductId("test");
+        product.setProductPriceId("test");
+        product.setProductCode("test");
+        product.setProductName("test");
+        product.setPrice(15000L);
+        productRepository.save(product);
+
+        Transaction transaction = new Transaction();
+        transaction.setBranch(branch);
+        transaction.setProduct(product);
+        transaction.setTransactionType(EAT_IN);
+        transaction.setReceiptNumber(12345679L);
+        transaction.setQuantity(5L);
+        transaction.setTotalSales(product.getPrice() * transaction.getQuantity());
+        transactionRepository.save(transaction);
+
+        Transaction getTransaction = transactionRepository.findById(transaction.getBillId()).orElseThrow(null);
+
+        mockMvc.perform(
+                get("/api/transactions/" + getTransaction.getBillId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
         ).andExpectAll(
                 status().isOk()
         ).andDo(result -> {
