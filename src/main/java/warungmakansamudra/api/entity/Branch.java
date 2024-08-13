@@ -34,4 +34,8 @@ public class Branch {
 
     @OneToMany(mappedBy = "branch")
     private List<Product> product;
+
+
+    @OneToMany(mappedBy = "branch")
+    private List<Transaction> transaction;
 }

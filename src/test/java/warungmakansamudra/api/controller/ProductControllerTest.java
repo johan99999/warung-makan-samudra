@@ -18,6 +18,7 @@ import warungmakansamudra.api.model.UpdateProductRequest;
 import warungmakansamudra.api.model.WebResponse;
 import warungmakansamudra.api.repository.BranchRepository;
 import warungmakansamudra.api.repository.ProductRepository;
+import warungmakansamudra.api.repository.TransactionRepository;
 
 import java.util.List;
 
@@ -42,10 +43,14 @@ class ProductControllerTest {
     private BranchRepository branchRepository;
 
     @Autowired
+    private TransactionRepository transactionRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
+        transactionRepository.deleteAll();
         productRepository.deleteAll();
         branchRepository.deleteAll();
     }

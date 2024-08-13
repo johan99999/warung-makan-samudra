@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import warungmakansamudra.api.repository.BranchRepository;
 import warungmakansamudra.api.repository.ProductRepository;
+import warungmakansamudra.api.repository.TransactionRepository;
 
 import java.util.UUID;
 
@@ -39,8 +40,12 @@ class BranchControllerTest {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private TransactionRepository transactionRepository;
+
     @BeforeEach
     void setUp() {
+        transactionRepository.deleteAll();
         productRepository.deleteAll();
         branchRepository.deleteAll();
     }

@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -34,4 +36,7 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "branch_id", referencedColumnName = "branch_id")
     private Branch branch;
+
+    @OneToMany(mappedBy = "product")
+    private List<Transaction> transaction;
 }
