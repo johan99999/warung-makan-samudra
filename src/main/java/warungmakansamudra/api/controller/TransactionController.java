@@ -2,9 +2,11 @@ package warungmakansamudra.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import warungmakansamudra.api.entity.Transaction;
 import warungmakansamudra.api.model.CreateTransactionRequest;
+import warungmakansamudra.api.model.TotalSalesResponse;
 import warungmakansamudra.api.model.TransactionResponse;
 import warungmakansamudra.api.model.WebResponse;
 import warungmakansamudra.api.service.TransactionService;
@@ -41,5 +43,19 @@ public class TransactionController {
     public WebResponse<List<TransactionResponse>> list(){
         List<TransactionResponse> transactionResponseList = transactionService.list();
         return WebResponse.<List<TransactionResponse>>builder().data(transactionResponseList).build();
+    }
+
+    @GetMapping("/api/transactions/total_sales")
+    public ResponseEntity<WebResponse<TotalSalesResponse>> getTotalSales(
+            @RequestParam(value = "startDate", required = false) String startDate,
+            @RequestParam(value = "endDate", required = false) String endDate) {
+
+        TotalSalesResponse totalSales = transactionService.getTotalSales(startDate, endDate);
+        WebResponse<TotalSalesResponse> response = new WebResponse<>();
+        response.setData(totalSales);
+        response.setErrors(null);
+        response.setPaging(null);
+
+        return ResponseEntity.ok(response);
     }
 }

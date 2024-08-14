@@ -13,6 +13,7 @@ import warungmakansamudra.api.entity.Branch;
 import warungmakansamudra.api.entity.Product;
 import warungmakansamudra.api.entity.Transaction;
 import warungmakansamudra.api.model.CreateTransactionRequest;
+import warungmakansamudra.api.model.TotalSalesResponse;
 import warungmakansamudra.api.model.TransactionResponse;
 import warungmakansamudra.api.model.WebResponse;
 import warungmakansamudra.api.repository.BranchRepository;
@@ -26,8 +27,7 @@ import static org.springframework.test.web.servlet.MockMvcBuilder.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static warungmakansamudra.api.entity.Transaction.TransactionType.EAT_IN;
-import static warungmakansamudra.api.entity.Transaction.TransactionType.ONLINE;
+import static warungmakansamudra.api.entity.Transaction.TransactionType.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -195,4 +195,73 @@ class TransactionControllerTest {
                 assertEquals(5, response.getData().size());
     });
 }
+
+
+    @Test
+    void getTotalSales() throws Exception{
+        for (int i = 0; i < 5; i++) {
+            Branch branch = new Branch();
+            branch.setBranchId("test - " + i);
+            branch.setBranchCode("test - " + i);
+            branch.setBranchName("test");
+            branch.setAddress("test");
+            branch.setPhoneNumber("test");
+            branchRepository.save(branch);
+
+            Product product = new Product();
+            product.setBranch(branch);
+            product.setProductId("test" + i);
+            product.setProductPriceId("test" + i);
+            product.setProductCode("test");
+            product.setProductName("test");
+            product.setPrice(15000L);
+            productRepository.save(product);
+
+            Transaction transaction = new Transaction();
+            transaction.setBranch(branch);
+            transaction.setProduct(product);
+            transaction.setTransactionType(EAT_IN);
+            transaction.setReceiptNumber(12345679L);
+            transaction.setQuantity(5L);
+            transaction.setTotalSales(product.getPrice() * transaction.getQuantity());
+            transactionRepository.save(transaction);
+
+            Transaction transaction2 = new Transaction();
+            transaction2.setBranch(branch);
+            transaction2.setProduct(product);
+            transaction2.setTransactionType(TAKE_AWAY);
+            transaction2.setReceiptNumber(12345679L);
+            transaction2.setQuantity(5L);
+            transaction2.setTotalSales(product.getPrice() * transaction.getQuantity());
+            transactionRepository.save(transaction2);
+
+            Transaction transaction3 = new Transaction();
+            transaction3.setBranch(branch);
+            transaction3.setProduct(product);
+            transaction3.setTransactionType(ONLINE);
+            transaction3.setReceiptNumber(12345679L);
+            transaction3.setQuantity(5L);
+            transaction3.setTotalSales(product.getPrice() * transaction.getQuantity());
+            transactionRepository.save(transaction3);
+
+        }
+        List<Transaction> getTransaction = transactionRepository.findAll();
+
+        mockMvc.perform(
+                get("/api/transactions/total_sales")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpectAll(
+                status().isOk()
+        ).andDo(result -> {
+            WebResponse<TotalSalesResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>(){
+            });
+
+            assertNotNull(response);
+            assertNull(response.getErrors());
+            assertNotNull(response.getData());
+
+            System.out.println(response);
+        });
+    }
 }

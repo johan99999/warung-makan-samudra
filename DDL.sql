@@ -1,4 +1,5 @@
 show databases;
+show tables ;
 
 create database wms_api;
 
@@ -42,3 +43,14 @@ create table transactions
 drop table transactions;
 show tables;
 desc transactions;
+
+create table total_sales
+(
+    total_sales_id bigint not null primary key auto_increment,
+    eat_in bigint not null ,
+    take_away bigint not null ,
+    online bigint not null ,
+    foreign key fk_total(total_sales_id) references transactions(bill_id)
+) Engine InnoDB;
+desc total_sales;
+drop table total_sales;

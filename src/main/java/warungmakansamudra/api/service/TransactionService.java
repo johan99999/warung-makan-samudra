@@ -9,11 +9,14 @@ import warungmakansamudra.api.entity.Branch;
 import warungmakansamudra.api.entity.Product;
 import warungmakansamudra.api.entity.Transaction;
 import warungmakansamudra.api.model.CreateTransactionRequest;
+import warungmakansamudra.api.model.TotalSalesResponse;
 import warungmakansamudra.api.model.TransactionResponse;
 import warungmakansamudra.api.repository.BranchRepository;
 import warungmakansamudra.api.repository.ProductRepository;
 import warungmakansamudra.api.repository.TransactionRepository;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -61,6 +64,7 @@ public class TransactionService {
         return toTransactionResponse(transaction, transaction.getProduct(), transaction.getBranch());
     }
 
+    @Transactional(readOnly = true)
     public List<TransactionResponse> list(){
         List<Transaction> transactions = transactionRepository.findAll();
 
@@ -68,6 +72,23 @@ public class TransactionService {
                 .map(this::toTransactionResponseList)
                 .collect(Collectors.toList());
     }
+    public TotalSalesResponse getTotalSales(String startDate, String endDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDateTime start = Optional.ofNullable(startDate).map(date -> LocalDateTime.parse(date, formatter)).orElse(null);
+        LocalDateTime end = Optional.ofNullable(endDate).map(date -> LocalDateTime.parse(date, formatter)).orElse(null);
+
+        Long eatInTotal = transactionRepository.getTotalSalesByTypeAndDate(Transaction.TransactionType.EAT_IN, start, end);
+        Long takeAwayTotal = transactionRepository.getTotalSalesByTypeAndDate(Transaction.TransactionType.TAKE_AWAY, start, end);
+        Long onlineTotal = transactionRepository.getTotalSalesByTypeAndDate(Transaction.TransactionType.ONLINE, start, end);
+
+        TotalSalesResponse response = new TotalSalesResponse();
+        response.setEatIn(eatInTotal);
+        response.setTakeAway(takeAwayTotal);
+        response.setOnline(onlineTotal);
+
+        return response;
+    }
+
 
     private TransactionResponse toTransactionResponse(Transaction transaction, Product product, Branch branch) {
         return TransactionResponse.builder()
