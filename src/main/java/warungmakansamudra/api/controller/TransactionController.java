@@ -9,6 +9,8 @@ import warungmakansamudra.api.model.TransactionResponse;
 import warungmakansamudra.api.model.WebResponse;
 import warungmakansamudra.api.service.TransactionService;
 
+import java.util.List;
+
 @RestController
 public class TransactionController {
 
@@ -30,5 +32,14 @@ public class TransactionController {
     public WebResponse<TransactionResponse> get(Transaction transaction, @PathVariable("bill_id") Long billId){
         TransactionResponse transactionResponse = transactionService.get(transaction, billId);
         return WebResponse.<TransactionResponse>builder().data(transactionResponse).build();
+    }
+
+    @GetMapping(
+            path = "/api/transactions/",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<List<TransactionResponse>> list(){
+        List<TransactionResponse> transactionResponseList = transactionService.list();
+        return WebResponse.<List<TransactionResponse>>builder().data(transactionResponseList).build();
     }
 }

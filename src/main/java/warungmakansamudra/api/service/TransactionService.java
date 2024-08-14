@@ -14,7 +14,9 @@ import warungmakansamudra.api.repository.BranchRepository;
 import warungmakansamudra.api.repository.ProductRepository;
 import warungmakansamudra.api.repository.TransactionRepository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -59,7 +61,38 @@ public class TransactionService {
         return toTransactionResponse(transaction, transaction.getProduct(), transaction.getBranch());
     }
 
+    public List<TransactionResponse> list(){
+        List<Transaction> transactions = transactionRepository.findAll();
+
+        return transactions.stream()
+                .map(this::toTransactionResponseList)
+                .collect(Collectors.toList());
+    }
+
     private TransactionResponse toTransactionResponse(Transaction transaction, Product product, Branch branch) {
+        return TransactionResponse.builder()
+                .billId(transaction.getBillId())
+                .receiptNumber(transaction.getReceiptNumber())
+                .transactionDate(transaction.getTransactionDate())
+                .transactionType(transaction.getTransactionType())
+                .productId(product.getProductId())
+                .productPriceId(product.getProductPriceId())
+                .productCode(product.getProductCode())
+                .productName(product.getProductName())
+                .price(product.getPrice())
+                .branchId(branch.getBranchId())
+                .branchCode(branch.getBranchCode())
+                .branchName(branch.getBranchName())
+                .address(branch.getAddress())
+                .phoneNumber(branch.getPhoneNumber())
+                .quantity(transaction.getQuantity())
+                .totalSales(transaction.getTotalSales())
+                .build();
+    }
+
+    private TransactionResponse toTransactionResponseList(Transaction transaction) {
+        Product product = transaction.getProduct();
+        Branch branch = transaction.getBranch();
         return TransactionResponse.builder()
                 .billId(transaction.getBillId())
                 .receiptNumber(transaction.getReceiptNumber())

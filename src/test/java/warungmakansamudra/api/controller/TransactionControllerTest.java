@@ -19,6 +19,8 @@ import warungmakansamudra.api.repository.BranchRepository;
 import warungmakansamudra.api.repository.ProductRepository;
 import warungmakansamudra.api.repository.TransactionRepository;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.MockMvcBuilder.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -144,6 +146,53 @@ class TransactionControllerTest {
             assertNotNull(productRepository.findById(product.getProductId()));
             assertEquals("test", response.getData().getBranchId());
             assertEquals("test", response.getData().getProductId());
+    });
+}
+
+@Test
+    void listTransactions() throws Exception{
+    for (int i = 0; i < 5; i++) {
+        Branch branch = new Branch();
+        branch.setBranchId("test - " + i);
+        branch.setBranchCode("test - " + i);
+        branch.setBranchName("test");
+        branch.setAddress("test");
+        branch.setPhoneNumber("test");
+        branchRepository.save(branch);
+
+        Product product = new Product();
+        product.setBranch(branch);
+        product.setProductId("test" + i);
+        product.setProductPriceId("test" + i);
+        product.setProductCode("test");
+        product.setProductName("test");
+        product.setPrice(15000L);
+        productRepository.save(product);
+
+        Transaction transaction = new Transaction();
+        transaction.setBranch(branch);
+        transaction.setProduct(product);
+        transaction.setTransactionType(EAT_IN);
+        transaction.setReceiptNumber(12345679L);
+        transaction.setQuantity(5L);
+        transaction.setTotalSales(product.getPrice() * transaction.getQuantity());
+        transactionRepository.save(transaction);
+
+    }
+        List<Transaction> getTransaction = transactionRepository.findAll();
+
+        mockMvc.perform(
+                get("/api/transactions/")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpectAll(
+                status().isOk()
+        ).andDo(result -> {
+                WebResponse<List<TransactionResponse>> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>(){
+        });
+
+                assertNull(response.getErrors());
+                assertEquals(5, response.getData().size());
     });
 }
 }
